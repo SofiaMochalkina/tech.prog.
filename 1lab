@@ -1,0 +1,149 @@
+#include <iostream>
+using namespace std;
+
+// Определяем структуру элемента списка
+struct Element {
+    // Модель обуви, артикул и стоимость
+    string model;
+    int article_number;
+    double cost;
+    Element* next; // Указатель на следующий элемент
+
+    // Конструктор для инициализации элемента
+    Element(string a, int b, double c) : model(a), article_number(b), cost(c), next(nullptr) {}
+};
+
+// Создаем связный список
+class LinkedList {
+private:
+    Element* head;
+
+public:
+    // Конструктор и деструктор
+    LinkedList() : head(nullptr) {}
+    ~LinkedList() {
+        while (head) {
+            Element* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
+    // Добавление элемента в начало списка
+    void Add_beginnig(string model, int article_number, double cost) {
+        Element* new_Element = new Element(model, article_number, cost); 
+        new_Element->next = head;
+        head = new_Element;
+    }
+
+    // Добавление элемента в конец списка
+    void Add_end(string model, int article_number, double cost) {
+        Element* new_Element = new Element(model, article_number, cost); 
+        if (!head) {
+            head = new_Element;
+        } else {
+            Element* temp = head;
+            while (temp->next) {
+                temp = temp->next;
+            }
+            temp->next = new_Element;
+        }
+    }
+
+    // Добавление элемента после заданного
+    void Add_after(string target, string model, int article_number, double cost) {
+        Element* temp = head;
+        while (temp) {
+            if (temp->model == target) {
+                Element* new_Element = new Element(model, article_number, cost); 
+                new_Element->next = temp->next;
+                temp->next = new_Element;
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "Элемент " << target << " отсутствует." << endl;
+    }
+
+    // Добавление элемента перед заданным
+    void add_before(string target, string model, int article_number, double cost) {
+        if (head->model == target) { // Исправлено на model
+            Add_beginnig(model, article_number, cost); // Исправлено на Add_beginnig
+            return;
+        }
+
+        Element* temp = head;
+        while (temp->next) {
+            if (temp->next->model == target) { // Исправлено на model
+                Element* new_Element = new Element(model, article_number, cost); // Используем параметры
+                new_Element->next = temp->next;
+                temp->next = new_Element;
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "Элемент " << target << " отсутствует." << endl; // Исправлено
+    }
+
+    // Удаление элемента по модели
+    void delete_element(string model) { 
+        if (!head) { 
+            cout << "Нечего удалять" << endl; 
+            return; 
+        } 
+        if (head->model == model) { 
+            Element* temp = head; 
+            head = head->next; 
+            delete temp; 
+            return; 
+        } 
+
+        Element* temp = head; 
+        while (temp->next && temp->next->model != model) { 
+            temp = temp->next; 
+        } 
+
+        if (temp->next) { 
+            Element* to_delete = temp->next; 
+            temp->next = temp->next->next; 
+            delete to_delete; 
+        } else { 
+            cout << "Элемент " << model << " отсутствует" << endl; // Исправлено
+        } 
+    } 
+
+    // Печать списка
+    void print_class() { 
+        Element* temp = head; 
+        while (temp) { 
+            cout << "Модель: " << temp->model << ", Артикул: " << temp->article_number << ", Стоимость: " << temp->cost << endl; 
+            temp = temp->next; 
+        } 
+    } 
+};
+
+int main() {
+    // Создание связного списка
+    LinkedList list;
+
+    // Добавляем элементы в список
+    list.Add_beginnig("Ботильоны", 7568375, 2999);
+    list.Add_end("Ботинки", 7158301, 2799);
+    list.Add_end("Кеды", 7958, 1999);
+    cout << "1 вывод:" << endl;
+    list.print_class();
+    //Добавление после заданного
+    list.Add_after("Ботинки", "Полуботинки", 7158, 2899); 
+    cout << "2 вывод" << endl;
+    list.print_class();
+    //добавление перед заданным 
+    list.add_before("Ботильоны", "Туфли", 2286, 2299); 
+    cout << "3 вывод" << endl;
+    list.print_class(); 
+    //удаление элеменета
+    list.delete_element("Кеды"); 
+    cout << "4 вывод" << endl;
+    list.print_class();
+
+    return 0;
+}
