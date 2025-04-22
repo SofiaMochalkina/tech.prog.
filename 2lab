@@ -1,0 +1,352 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class vect {
+public:
+    int dim;
+    double* b;
+    int num;
+    static int count;
+
+    // Конструктор
+    vect(int d) : dim(d) {
+        b = new double[dim];
+        for (int i = 0; i < dim; ++i) {
+            b[i] = 0.0; // Инициализация нулями
+        }
+        num = ++count;
+        cout << "vect::Constructor called. Object number: " << num << endl;
+    }
+
+    // Конструктор копирования
+    vect(const vect& other) : dim(other.dim) {
+        b = new double[dim];
+        for (int i = 0; i < dim; ++i) {
+            b[i] = other.b[i];
+        }
+        num = ++count;
+        cout << "vect::Copy Constructor called. Object number: " << num << " copying from " << other.num << endl;
+    }
+
+    // Оператор присваивания
+    vect& operator=(const vect& other) {
+        if (this != &other) {
+            if (dim != other.dim) {
+                cout << "Error: Dimensions do not match in assignment operator." << endl;
+                return *this; // Или бросить исключение
+            }
+            for (int i = 0; i < dim; ++i) {
+                b[i] = other.b[i];
+            }
+            cout << "vect::Assignment operator called. Object number: " << num << " assigned from " << other.num << endl;
+        }
+        return *this;
+    }
+
+    // Деструктор
+    ~vect() {
+        cout << "vect::Destructor called. Object number: " << num << endl;
+        delete[] b;
+    }
+
+    // Оператор + (v+v)
+    vect operator+(const vect& other) const {
+        if (dim != other.dim) {
+            cout << "Error: Dimensions do not match in v+v operator." << endl;
+            return *this; // Или бросить исключение
+        }
+        vect result(dim);
+        for (int i = 0; i < dim; ++i) {
+            result.b[i] = b[i] + other.b[i];
+        }
+        cout << "vect::Operator + (v+v) called. Object number: " << num << " + " << other.num << endl;
+        return result;
+    }
+
+    // Оператор - (v-v)
+    vect operator-(const vect& other) const {
+        if (dim != other.dim) {
+            cout << "Error: Dimensions do not match in v-v operator." << endl;
+            return *this; // Или бросить исключение
+        }
+        vect result(dim);
+        for (int i = 0; i < dim; ++i) {
+            result.b[i] = b[i] - other.b[i];
+        }
+        cout << "vect::Operator - (v-v) called. Object number: " << num << " - " << other.num << endl;
+        return result;
+    }
+
+    // Унарный минус (-v)
+    vect operator-() const {
+        vect result(dim);
+        for (int i = 0; i < dim; ++i) {
+            result.b[i] = -b[i];
+        }
+        cout << "vect::Unary Operator - (-v) called. Object number: " << num << endl;
+        return result;
+    }
+
+    // Скалярное произведение (v*v)
+    double operator*(const vect& other) const {
+        if (dim != other.dim) {
+            cout << "Error: Dimensions do not match in v*v operator." << endl;
+            return 0.0; // Или бросить исключение
+        }
+        double result = 0.0;
+        for (int i = 0; i < dim; ++i) {
+            result += b[i] * other.b[i];
+        }
+        cout << "vect::Operator * (v*v) called. Object number: " << num << " * " << other.num << endl;
+        return result;
+    }
+
+    // Оператор * (k*v) - Дружественная функция для коммутативности
+     vect operator*(double k) {
+        vect result(dim);
+        for (int i = 0; i < dim; ++i) {
+            result.b[i] = k * b[i];
+        }
+        cout << "vect::Friend Operator * (k*v) called.  k * Object number: " << num << endl;
+        return result;
+    }
+
+    void print() const {
+        cout << "Vector " << num << ": ";
+        for (int i = 0; i < dim; ++i) {
+            cout << b[i] << " ";
+        }
+        cout << endl;
+    }
+};
+
+int vect::count = 0; // Инициализация статической переменной
+
+class matr {
+public:
+    int dim;
+    double** a;
+    int num;
+    static int count;
+
+    // Конструктор
+    matr(int d) : dim(d) {
+        a = new double*[dim];
+        for (int i = 0; i < dim; ++i) {
+            a[i] = new double[dim];
+            for (int j = 0; j < dim; ++j) {
+                a[i][j] = 0.0; // Инициализация нулями
+            }
+        }
+        num = ++count;
+        cout << "matr::Constructor called. Object number: " << num << endl;
+    }
+
+    // Конструктор копирования
+    matr(const matr& other) : dim(other.dim) {
+        a = new double*[dim];
+        for (int i = 0; i < dim; ++i) {
+            a[i] = new double[dim];
+            for (int j = 0; j < dim; ++j) {
+                a[i][j] = other.a[i][j];
+            }
+        }
+        num = ++count;
+        cout << "matr::Copy Constructor called. Object number: " << num << " copying from " << other.num << endl;
+    }
+
+    // Оператор присваивания
+    matr& operator=(const matr& other) {
+        if (this != &other) {
+            if (dim != other.dim) {
+                cout << "Error: Dimensions do not match in assignment operator." << endl;
+                return *this; // Или бросить исключение
+            }
+            for (int i = 0; i < dim; ++i) {
+                for (int j = 0; j < dim; ++j) {
+                    a[i][j] = other.a[i][j];
+                }
+            }
+            cout << "matr::Assignment operator called. Object number: " << num << " assigned from " << other.num << endl;
+        }
+        return *this;
+    }
+
+    // Деструктор
+    ~matr() {
+        cout << "matr::Destructor called. Object number: " << num << endl;
+        for (int i = 0; i < dim; ++i) {
+            delete[] a[i];
+        }
+        delete[] a;
+    }
+
+    // Оператор + (m+m)
+    matr operator+(const matr& other) const {
+        if (dim != other.dim) {
+            cout << "Error: Dimensions do not match in m+m operator." << endl;
+            return *this; // Или бросить исключение
+        }
+        matr result(dim);
+        for (int i = 0; i < dim; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                result.a[i][j] = a[i][j] + other.a[i][j];
+            }
+        }
+        cout << "matr::Operator + (m+m) called. Object number: " << num << " + " << other.num << endl;
+        return result;
+    }
+
+    // Оператор - (m-m)
+    matr operator-(const matr& other) const {
+        if (dim != other.dim) {
+            cout << "Error: Dimensions do not match in m-m operator." << endl;
+            return *this; // Или бросить исключение
+        }
+        matr result(dim);
+        for (int i = 0; i < dim; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                result.a[i][j] = a[i][j] - other.a[i][j];
+            }
+        }
+        cout << "matr::Operator - (m-m) called. Object number: " << num << " - " << other.num << endl;
+        return result;
+    }
+
+    // Унарный минус (-m)
+    matr operator-() const {
+        matr result(dim);
+        for (int i = 0; i < dim; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                result.a[i][j] = -a[i][j];
+            }
+        }
+        cout << "matr::Unary Operator - (-m) called. Object number: " << num << endl;
+        return result;
+    }
+
+    // Оператор * (m*m)
+    matr operator*(const matr& other) const {
+        if (dim != other.dim) {
+            cout << "Error: Dimensions do not match in m*m operator." << endl;
+            return *this; // Или бросить исключение
+        }
+        matr result(dim);
+        for (int i = 0; i < dim; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                for (int k = 0; k < dim; ++k) {
+                    result.a[i][j] += a[i][k] * other.a[k][j];
+                }
+            }
+        }
+        cout << "matr::Operator * (m*m) called. Object number: " << num << " * " << other.num << endl;
+        return result;
+    }
+
+    // Оператор * (k*m) - Дружественная функция для коммутативности
+    friend matr operator*(double k, const matr& m) {
+        matr result(m.dim);
+        for (int i = 0; i < m.dim; ++i) {
+            for (int j = 0; j < m.dim; ++j) {
+                result.a[i][j] = k * m.a[i][j];
+            }
+        }
+        cout << "matr::Friend Operator * (k*m) called.  k * Object number: " << m.num << endl;
+        return result;
+    }
+
+    // Оператор * (m*v)
+    vect operator*(const vect& v) const {
+        if (dim != v.dim) {
+            cout << "Error: Dimensions do not match in m*v operator." << endl;
+            return vect(dim); // Или бросить исключение
+        }
+        vect result(dim);
+        for (int i = 0; i < dim; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                result.b[i] += a[i][j] * v.b[j];
+            }
+        }
+        cout << "matr::Operator * (m*v) called. Object number: " << num << " * Vector number: " << v.num << endl;
+        return result;
+    }
+
+    void print() const {
+        cout << "Matrix " << num << ":" << endl;
+        for (int i = 0; i < dim; ++i) {
+            for (int j = 0; j < dim; ++j) {
+                cout << a[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+int matr::count = 0; // Инициализация статической переменной
+
+int main() {
+    // Сценарий работы с векторами
+    vect v1(3);
+    v1.b[0] = 1.0; v1.b[1] = 2.0; v1.b[2] = 3.0;
+    v1.print();
+
+    vect v2(3);
+    v2.b[0] = 4.0; v2.b[1] = 5.0; v2.b[2] = 6.0;
+    v2.print();
+
+    vect v3 = v1 + v2;
+    v3.print();
+
+    vect v4 = v1 - v2;
+    v4.print();
+
+    vect v5 = -v1;
+    v5.print();
+
+    double scalar_product = v1 * v2;
+    cout << "Scalar product of v1 and v2: " << scalar_product << endl;
+
+    vect v6 =  v1* 2;
+    v6.print();
+
+    vect v7 = v1;  // Assignment
+    v7.print();
+
+    // Сценарий работы с матрицами
+    matr m1(2);
+    m1.a[0][0] = 1.0; m1.a[0][1] = 2.0;
+    m1.a[1][0] = 3.0; m1.a[1][1] = 4.0;
+    m1.print();
+
+    matr m2(2);
+    m2.a[0][0] = 5.0; m2.a[0][1] = 6.0;
+    m2.a[1][0] = 7.0; m2.a[1][1] = 8.0;
+    m2.print();
+
+    matr m3 = m1 + m2;
+    m3.print();
+
+    matr m4 = m1 - m2;
+    m4.print();
+
+    matr m5 = -m1;
+    m5.print();
+
+    matr m6 = m1 * m2;
+    m6.print();
+
+    matr m7 = 0.5 * m1;
+    m7.print();
+
+    matr m8 = m1;  // Assignment
+    m8.print();
+
+    vect v8(2);
+    v8.b[0] = 1.0; v8.b[1] = 2.0;
+    vect v9 = m1 * v8;
+    v9.print();
+
+    return 0;
+}
